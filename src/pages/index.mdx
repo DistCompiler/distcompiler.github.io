@@ -1,0 +1,48 @@
+---
+layout: ../layouts/Layout.astro
+title: Home
+---
+
+PGo is a source to source compiler that translates Modular PlusCal
+specifications (which use a superset of
+[PlusCal](http://lamport.azurewebsites.net/tla/pluscal.html)) into [Go](https://golang.org/) programs.
+
+To get an overview via video, we have recorded two recent presentations:
+- [PGo TLA+ conference talk, September 2022](https://www.youtube.com/watch?v=XHqd60ZeUBo)
+- [PGo overview talk, February 2022](https://www.youtube.com/watch?v=H6-dQQSikik).
+
+For more in-depth documentation, see the navigation bar.
+
+# Purpose and motivation
+
+[PlusCal](http://lamport.azurewebsites.net/tla/pluscal.html) is a
+language for specifying/modeling concurrent systems. It was designed
+to make it easier to write [TLA+](https://github.com/tlaplus). In
+particular, PlusCal can be compiled into TLA+, which can be checked
+against useful system properties (using the TLC model checker). For
+example, [here](https://github.com/duerrfk/skp) is a repository of
+PlusCal formulations of solutions to the mutual exclusion problem.
+
+[Go](https://golang.org/) is a C based language developed by Google
+for building distributed systems. It has built in support for
+concurrency with channels, and goroutines, which makes it great for
+developing distributed systems.
+
+Currently there are no tools that correspond a PlusCal/TLA+ spec with
+an implementation of the spec. PGo is a tool that aims to connect the
+specification with the implementation by generating Go code based on a
+specification written in Modular PlusCal. The "Modular" prefix
+comes from the need to distinguish the description of a system from
+the model of its environment, which is needed for model checking.
+PGo enables the translation of a Modular PlusCal description of a
+distributed system to verifiable PlusCal,
+as well as to a semantically equivalent Go program.
+
+# Current status
+
+PGo is a research project that is currently under active development.
+It supports compilation of all PlusCal control flow constructs.
+PGo also supports a vast majority of the value-level TLA+ supported by TLC.
+See the pull requests and issues for documentation of ongoing work.
+
+To try PGo out anyway, check out the <a href="usage">usage documentation</a> or the current <a href="mpcal">description of Modular PlusCal</a>.

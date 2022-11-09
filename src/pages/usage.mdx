@@ -1,0 +1,224 @@
+---
+layout: ../layouts/Layout.astro
+title: Usage
+---
+import Figure from '../components/Figure.svelte';
+
+In PGo's active-development state, we do not provide stable releases.
+To run PGo, the best way is to clone the repository, and, on the master branch, run it via the [sbt](https://www.scala-sbt.org/) build tool:
+```bash
+$ sbt
+> run [command-line arguments]
+```
+
+See the usage notes below for what arguments the program accepts.
+
+# Usage
+
+The PGo tool's help text reads:
+
+```
+PGo compiler
+  -h, --help   Show help message
+
+Subcommand: gogen
+  -o, --out-file  <arg>
+  -p, --package-name  <arg>
+  -s, --spec-file  <arg>
+  -h, --help                  Show help message
+
+Subcommand: pcalgen
+  -s, --spec-file  <arg>
+  -h, --help               Show help message
+```
+
+It has two subcommands: `gogen` and `pcalgen`.
+
+
+## gogen
+
+The `gogen` subcommand requests that PGo generate a Go file from an MPCal-containing TLA+ module.
+Most customisation of this stage should be done by choosing specific parameters when calling the generated Go code,
+so there are only a few options to consider.
+
+- `--out-file` specifies the path to the Go output file, like `-o` in GCC.
+- `--spec-file` specifies the path to the TLA+ input file
+- `--package-name` allows customisation of the package name of the Go output file. This defaults to a sanitized version of the
+  MPCal algorithm name.
+
+## pcalgen
+
+The `pcalgen` subcommand requests that PGo rewrite its MPCal-containing TLA+ input file,
+such that it contains a PlusCal translation of the MPCal algorithm.
+The only option, `--spec-file`, is the path to the spec file, which will be rewritten.
+
+To insert the PlusCal translation, PGo will look for comments like, give or take whitespace:
+```tla
+\* BEGIN PLUSCAL TRANSLATION
+... any number of lines may go here
+\* END PLUSCAL TRANSLATION
+```
+
+If it cannot find one of both of these comments in that order, it will give up with an error message describing the problem,
+and will not write any output.
+
+# How it works
+
+PGo is a source to source compiler written in Scala. It compiles specifications written in an extension of PlusCal,
+called Modular PlusCal (see the [Modular PlusCal page](mpcal) for more details),
+to Go programs.
+
+# How to build (for development)
+
+PGo's Scala code builds via an [sbt](https://www.scala-sbt.org/) project, with its dependencies managed
+by [Maven](https://maven.apache.org/).
+PGo additionally provides a runtime support library for its generated Go code, which lives in the `distsys/`
+subfolder. This Go code is a standard Go module, which can be imported via the URL https://github.com/DistCompiler/pgo/distsys.
+
+The main build script is the top-level [build.sbt](https://github.com/DistCompiler/pgo/blob/master/build.sbt).
+To build from terminal, run `sbt` in the root directory and use the standard commands provided by the sbt console.
+These include `run <command-line args>` to (re-)compile and run PGo, and `test` to run all tests, including Go tests.
+
+The sbt build can also be auto-imported by the IntelliJ Scala plugin, as well as likely any other IDE with Scala support.
+
+PGo's Scala code has managed dependencies on a small set of utility libraries:
+
+- [scallop](https://github.com/scallop/scallop) for command-line argument parsing
+- [scala-parser-combinators](https://github.com/scala/scala-parser-combinators) for the TLA+/PCal/MPCal parser
+- [os-lib](https://github.com/com-lihaoyi/os-lib) for simplified file and process manipulation (process manipulation is used during tests)
+
+PGo's test suites additionally depend on:
+
+- the `go` executable. The tests will attempt to find this, probably on the `$PATH` or equivalent, via the JVM's default lookup process.
+- [ScalaTest](https://www.scalatest.org/) as test framework
+- [ScalaCheck](https://www.scalacheck.org/) for implementing fuzz tests
+- [java-diff-utils](https://github.com/java-diff-utils/java-diff-utils) for generating diffs when tests compare big blocks of text
+
+PGo's Go runtime library depends on:
+
+- [immutable](https://github.com/benbjohnson/immutable) for efficient immutable implementations of lists and maps in the TLA+ data model.
+  For example, creating a modified map with one different key-value pair should take constant time, rather than copy the
+  entire existing structure.
+- [multierr](https://github.com/uber-go/multierr) for combining errors.
+
+PGo is tested using OpenJDK 1.11 through 1.16, and Go 1.18.
+OpenJDK 1.11+ is needed because of standard API usage.
+Go >=1.18 is needed because of generics.
+
+# Example verification workflow
+import img_add_new_spec from '../images/usage/add-new-spec.png';
+import img_browse from '../images/usage/browse.png';
+import img_new_model from '../images/usage/new-model.png';
+import img_new_model_dialog from '../images/usage/new-model-dialog.png';
+import img_value_filling from '../images/usage/value-filling.png';
+import img_what_is_the_model from '../images/usage/what-is-the-model.png';
+import img_what_to_check from '../images/usage/what-to-check.png';
+import img_invariants from '../images/usage/invariants.png';
+import img_properties from '../images/usage/properties.png';
+import img_what_to_check_2 from '../images/usage/what-to-check-2.png';
+import img_run_tlc_on_the_model from '../images/usage/run-tlc-on-the-model.png';
+import img_results from '../images/usage/results.png';
+
+In this section, we'll go over how to verify a load balancer. We'll get PGo's example load balancer specification, compile it to PlusCal using PGo, compile the resulting PlusCal to TLA+ using the TLA+ toolbox, and then verify some invariants and properties of the specification in the toolbox.
+
+1. Download PGo's example [load balancer specification](https://github.com/DistCompiler/pgo/blob/master/systems/loadbalancer/load_balancer.tla).
+
+2. Compile the specification to PlusCal (output in the same file) using PGo with the following command, replacing the example paths with appropriate paths.
+   ```bash
+   sbt run pcalgen --spec-file systems/loadbalancer/loadbalancer.tla
+   ```
+
+3. Open the load balancer specification in the TLA+ toolbox (by going to File > Open Spec > Add New Spec... > Browse...).
+   <div class="flex flex-row">
+    <Figure src={img_add_new_spec} alt="Add New Spec..." client:load />
+    <Figure src={img_browse} alt="Browse..." client:load />
+   </div>
+
+4. Press `Ctrl-t` to compile PlusCal to TLA+ (output in the same file).
+
+5. On the left pane, right click on models, select New Models..., and name the new model. The created model is opened on the right pane.
+   <div class="flex flex-row">
+    <Figure src={img_new_model} alt="New model..." client:load />
+    <Figure src={img_new_model_dialog} alt="New model dialog..." client:load />
+   </div>
+
+6. In What is the model? on the lower right side, double click on each item and fill in the following values.
+   ```
+   |   Item      | Value |
+   | ----------- | ----- |
+   | GET_PAGE    |     1 |
+   | NUM_CLIENTS |     1 |
+   | NUM_SERVERS |     1 |
+   | BUFFER_SIZE |     1 |
+   | WEB_PAGE    |     1 |
+   ```
+
+   You can vary the values as you see fit.
+
+   <div class="flex flex-row">
+    <Figure src={img_value_filling} alt="Value filling..." client:load />
+    <Figure src={img_what_is_the_model} alt="What is the model?" client:load />
+   </div>
+
+7. Scroll down and expand out Invariants and Properties on the lower left side.
+   <Figure src={img_what_to_check} alt="What to check?" client:load />
+
+8. In Invariants, click Add, type in BuffersOk, and click Finish.
+   BuffersOk (found on [line 501](https://github.com/UBC-NSS/pgo/blob/master/examples/mpcal/load_balancer.tla#L501)) states that the buffer must not underflow nor overflow.
+
+   <Figure src={img_invariants} alt="Invariants..." client:load />
+
+9. In Properties, click Add, type in ClientsOk, and click Finish.
+   ClientsOk (found on [line 515](https://github.com/UBC-NSS/pgo/blob/master/examples/mpcal/load_balancer.tla#L515)) states that the client requesting a web page eventually receives that web page.
+   
+   <Figure src={img_properties} alt="Properties..." client:load />
+
+   What to check? should now look like the following.
+
+   <Figure src={img_what_to_check_2} alt="What to check?" client:load />
+
+10. Click Run TLC on the model. (the green circle with a white triangle that looks like a play button)
+
+    <Figure src={img_run_tlc_on_the_model} alt="Run TLC on the model..." client:load />
+
+    Below is an example output.
+
+    <Figure src={img_results} alt="Results" client:load />
+
+    The output shows that TLC ran for 6 seconds in breath-first search mode. It found 3033 states, out of which 1274 states are distinct (visited states are not rechecked). The specification satisfies the invariant `BuffersOk` and property `ClientsOk` so TLC output `No errors`.
+
+# Example invariant violation
+
+import img_comment from '../images/usage/comment.png';
+import img_reload from '../images/usage/reload.png';
+import img_run_tlc_on_the_model_2 from '../images/usage/run-tlc-on-the-model-2.png';
+import img_violation from '../images/usage/violation.png';
+import img_error_trace from '../images/usage/error-trace.png';
+
+In this section, we'll modify the example load balancer to see an example violation of desired invariant BuffersOk.
+
+1. Open the load balancer specification in the TLA+ toolbox.
+
+2. Comment out [line 234](https://github.com/UBC-NSS/pgo/blob/master/examples/mpcal/load_balancer.tla#L234), which instructs the client to wait until the buffer is not full before sending a message. Press `Ctrl-s` to save.
+   
+   <Figure src={img_comment} alt="Where to comment" client:load />
+
+3. Recompile the file using PGo.
+
+4. Reload the file when asked to do so in the toolbox.
+
+   <Figure src={img_reload} alt="Reload..." client:load />
+
+5. Press `Ctrl-t` to recompile to TLA+.
+
+6. Open the created model and run it.
+
+   <Figure src={img_run_tlc_on_the_model_2} alt="Run TLC on the model..." client:load />
+
+   TLC shows that invariant BuffersOk is violated.
+
+   <Figure src={img_violation} alt="Violation" client:load />
+
+   The Error-Trace pane shows how BuffersOk is violated. In this case, the client sent two messages to the server, which overflows the network buffer of size one.
+
+   <Figure src={img_error_trace} alt="Error trace" client:load />

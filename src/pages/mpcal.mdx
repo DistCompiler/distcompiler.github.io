@@ -1,0 +1,138 @@
+---
+layout: ../layouts/Layout.astro
+title: Modular PlusCal
+---
+
+This page describes the current state of our Modular PlusCal specification.
+
+# Abstract
+
+This page describes the current state of our Modular PlusCal specification. Modular PlusCal allows the specification writer to more clearly separate abstract and implementation-dependent details, allowing the PGo compiler to generate source code that is easy to change and enables the evolution of specification and implementation to happen at the same time.
+
+This was originally discussed in [Github issue #75](https://github.com/UBC-NSS/pgo/issues/75).
+
+This document describes language syntax and limitations associated with each feature.
+
+# Syntax
+
+Modular PlusCal (MPCal) is comprised of three features: _archetypes_, _mapping macros_, and _references_. MPCal algorithms are declared in `.tla` files as comments as below:
+
+```tla
+---- MODULE DistributedProtocol ----
+EXTENDS Integers, Sequeneces, TLC
+
+CONSTANTS A, B, C
+
+(************************
+--mpcal DistributedProtocol {
+\* Modular PlusCal specification
+}
+************************)
+====================================
+```
+
+MPCal is compiled by PGo to vanilla PlusCal, which is turn translated to TLA+ by the [TLA+ toolbox](https://lamport.azurewebsites.net/tla/toolbox.html). Temporal properties and invariants can then be written as usual.
+
+## Archetypes
+
+Archetypes describe the behavior of the processes being specified. They are declared as such:
+
+```mpcal
+archetype Coordinator(connection)
+variables local = 10, success = FALSE;
+{
+    l1: statement1;
+    l2: statement2;
+}
+```
+
+Archetypes look a lot like PlusCal processes (syntactically speaking). However, they differ in key aspects:
+
+* Archetypes have more strict scope: they can only access local variables, TLA+ constants, and arguments passed in to them. Access to global variables is not possible;
+* As a consequence, any macros called within an archetype also do not have access to global variables;
+* TLA+ operators called within an archetype must both: access no global variables; and be _pure_.
+* Assignments are restricted: only local variables or arguments passed as _references_ can be assigned to (see References section for more details).
+
+On the other hand, archetypes share some similarities with PlusCal processes:
+
+* Same labeling rules apply;
+* Archetypes have access to an implicit, immutable `self` parameter, defined when archetypes are _instantiated_.
+
+Archetypes are used when processes are defined based on them: this is called **instantiation**:
+
+```mpcal
+CONSTANTS COORDINATORS, BACKUPS
+
+variables connection = <<>>,
+          backupConnection = <<>>;
+
+process (MainCoordinator \in COORDINATORS) == instance Coordinator(connection);
+process (BackupCoordinator \in BACKUPS) == instance Coordinator(backupConnection);
+```
+
+In the definition above, the `connection` variable is global in PlusCal. However, when PGo compiles an specification like the one above, _only source code for archetypes is generated_. Archetype parameters represent implementation-specific details that need to be filled in by the developer (oftentimes, the PGo runtime will provide most of the logic required in these implementation-specific components).
+
+## Mapping Macros
+
+Mapping macros allow developers to isolate model-checking behavior from archetypes. They are simple wrappers for non-determinism and abstractions.
+
+Suppose we want to model a network that is both lossy and reordering (emulating UDP semantics in concrete environments). MPCal enables the specification developer to write this behavior as a mapping macro:
+
+```mpcal
+mapping macro LossyReorderingNetwork {
+    read {
+        with (msg \in $variable) {
+            $variable := $variable \ msg;
+            yield msg;
+        }
+    }
+
+    write {
+        either { yield $variable } or { yield Append($variable, $value) };
+    }
+}
+```
+
+The mapping macro above introduces a number of related concepts:
+
+* Every mapping macro has a unique identifier: in the previous example, the mapping macro is called `LossyReorderingNetwork`;
+* Mapping macros must define two operations: `read` and `write`, which define what happens when the mapped variable is read and written to, respectively. Note that order _is_ relevant: `read` macros **must** be defined before `write` macros.
+* Mapping macros have access to special variables in their definitions: `$variable` is the _name_ of the variable being mapped; `$value` is the value being assigned to the mapped variable.
+* `yield expression` indicates that when the mapped variable is read (written to), `expression` should be read (written) instead.
+
+Mapping macros are supposed to be thin wrappers and, as such, operate under several restrictions:
+
+* Mapping macros cannot reference any variable by name; no variables are in scope.
+* `$variable` refers to the _name_ of the variable being mapped and is available on both read and write mappings; `$value` is the value being written to the mapped variable and therefore is only available in the write mapping.
+* No labels are allowed; all statements in a mapping macro happen in the same label of the mapped statement (variable read or write).
+* Mapping macros cannot create variables whose scope outlives the mapping macro. Locally scoped variables can be created using PlusCal's `with` construct.
+* As a corollary of the above, **only assignments to `$variable` are permitted, and only on read mappings**. Write mappings cannot write to `$variable` because they are used precisely when an assignment is being made, and PlusCal does not allow writing to the same variable twice in the same step (label).
+
+Once defined, mapping macros can be used during _instantiation_, mapping variables passed to archetypes:
+
+```mpcal
+process MainCoordinator == instance Coordinator(connection)
+    mapping connection via LossyReorderingNetwork;
+```
+
+## References
+
+References is an extension to parameter passing in PlusCal that makes mutation intent explicit. In particular, they are used when an archetype modifies one of its arguments and also allowing _procedures_ to modify its parameters (not possible in PlusCal).
+
+Assignments to non-local variables in archetypes and procedures can only happen if the argument is passed as a reference:
+
+```mpcal
+procedure inc(ref counter) {
+    i: counter := counter + 1;
+       return;
+}
+
+archetype Counter(ref counter) {
+    call inc(ref counter);
+}
+
+variable n = 0;
+process CounterProcess == instance Counter(ref n);
+```
+
+In the example above, the keyword `ref` is used to indicate that `n` is passed as a reference to the archetype definition, which is then able to pass it as a reference to the `inc` procedure, which modifies the parameter in a way that is visible after the procedure returns.

@@ -1,0 +1,37 @@
+---
+export interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+
+const links = [
+    {
+        name: "Home",
+        href: ".",
+    },
+    {
+        name: "Usage",
+        href: "usage",
+    },
+    {
+        name: 'Modular PlusCal',
+        href: 'mpcal',
+    },
+];
+---
+
+<header class="flex flex-row flex-wrap gap-8 rounded-t outline outline-2 outline-offset-8 outline-slate-800 mb-8 items-end">
+    <h1 class="text-4xl"><a href=".">DistCompiler/PGo</a></h1>
+    <nav class="mr-8">
+        <ul class="flex flex-row gap-4 text-lg font-medium">
+            {
+                links.map(link => (
+                    <li class={title === link.name ? "text-slate-400 underline hover:no-underline" : "hover:underline"}>
+                        <a href={link.href}>&#62; {link.name}</a>
+                    </li>
+                ))
+            }
+        </ul>
+    </nav>
+</header>

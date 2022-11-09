@@ -8,21 +8,23 @@ const { title } = Astro.props;
 const links = [
     {
         name: "Home",
-        href: ".",
+        href: "/",
     },
     {
         name: "Usage",
-        href: "usage",
+        href: "/usage",
     },
     {
         name: 'Modular PlusCal',
-        href: 'mpcal',
+        href: '/mpcal',
     },
 ];
 ---
 
 <header class="flex flex-row flex-wrap gap-8 rounded-t outline outline-2 outline-offset-8 outline-slate-800 mb-8 items-end">
-    <h1 class="text-4xl"><a href=".">DistCompiler/PGo</a></h1>
+    <h1 class="text-4xl">
+        <a href="/">DistCompiler/PGo</a>
+    </h1>
     <nav class="mr-8">
         <ul class="flex flex-row gap-4 text-lg font-medium">
             {

@@ -11,17 +11,26 @@ export default defineConfig({
     shikiConfig: {
       theme: 'dracula',
       langs: [
-      // important: a language's dependencies must be loaded first, or explosion
-      {
-        id: 'mpcal',
-        scopeName: 'source.tlaplus.mpcal',
-        grammar: JSON.parse(readFileSync('highlighting/mpcal.tmLanguage.json'))
-      }, {
-        id: 'tlaplus',
-        scopeName: 'source.tlaplus',
-        grammar: JSON.parse(readFileSync('./highlighting/tlaplus.tmLanguage.json')),
-        aliases: ['tla']
-      }],
+        // important: a language's dependencies must be loaded first, or explosion
+        {
+          id: 'tlaplus',
+          scopeName: 'source.tlaplus',
+          grammar: JSON.parse(readFileSync('./highlighting/tlaplus.tmLanguage.json')),
+          aliases: ['tla'],
+        },
+        {
+          id: 'pluscal',
+          scopeName: 'source.tlaplus.pluscal',
+          grammar: JSON.parse(readFileSync('./highlighting/pluscal.tmLanguage.json')),
+          embeddedLangs: ['tlaplus'],
+        },
+        {
+          id: 'mpcal',
+          scopeName: 'source.tlaplus.mpcal',
+          grammar: JSON.parse(readFileSync('./highlighting/mpcal.tmLanguage.json')),
+          embeddedLangs: ['tlaplus', 'pluscal'],
+        },
+      ],
       wrap: true
     }
   }

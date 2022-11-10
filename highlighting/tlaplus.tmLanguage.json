@@ -105,42 +105,6 @@
 			"begin": "\\\\\\*",
 			"end": "$"
 		},
-		"comment-block": {
-			"name": "comment.block.tlaplus",
-			"begin": "\\(\\*",
-			"end": "\\*\\)",
-			"patterns": [
-				{
-					"begin": "(\\-\\-)(mpcal)(\\s+)(\\w+)(\\s*)({)",
-					"end": "}",
-					"beginCaptures": {
-						"2": {
-							"name": "keyword.other.mpcal"
-						}
-					},
-					"name": "meta.embedded.block.mpcal",
-					"patterns": [{
-						"include": "source.tlaplus.mpcal"
-					}]
-				},
-				{
-					"begin": "(\\-\\-)(algorithm|fair\\s+algorithm)(\\s+)(\\w+)(\\s*)({)",
-					"end": "}",
-					"beginCaptures": {
-						"2": {
-							"name": "keyword.other.pluscal" 
-						}
-					},
-					"name": "meta.embedded.block.pluscal",
-					"patterns": [{
-						"include": "source.tlaplus.pluscal"
-					}]
-				},
-				{
-					"include": "#comment-block"
-				}
-			]
-		},
 		"operators-4-char": {
 			"name": "keyword.operator.tlaplus",
 			"match": "(\\(\\\\X\\)|-\\+-\\>)"

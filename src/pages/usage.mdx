@@ -129,7 +129,7 @@ In this section, we'll go over how to verify a load balancer. We'll get PGo's ex
    ```
 
 3. Open the load balancer specification in the TLA+ toolbox (by going to File > Open Spec > Add New Spec... > Browse...).
-   <div class="flex flex-row">
+   <div class="flex flex-row flex-wrap">
     <Figure src={img_add_new_spec} alt="Add New Spec..." client:load />
     <Figure src={img_browse} alt="Browse..." client:load />
    </div>
@@ -137,25 +137,26 @@ In this section, we'll go over how to verify a load balancer. We'll get PGo's ex
 4. Press `Ctrl-t` to compile PlusCal to TLA+ (output in the same file).
 
 5. On the left pane, right click on models, select New Models..., and name the new model. The created model is opened on the right pane.
-   <div class="flex flex-row">
+   <div class="flex flex-row flex-wrap">
     <Figure src={img_new_model} alt="New model..." client:load />
     <Figure src={img_new_model_dialog} alt="New model dialog..." client:load />
    </div>
 
-6. In What is the model? on the lower right side, double click on each item and fill in the following values.
-   ```
-   |   Item      | Value |
-   | ----------- | ----- |
-   | GET_PAGE    |     1 |
-   | NUM_CLIENTS |     1 |
-   | NUM_SERVERS |     1 |
-   | BUFFER_SIZE |     1 |
-   | WEB_PAGE    |     1 |
-   ```
+6. In "What is the model?" on the lower right side, double click on each item and fill in the following values.
+
+   <div class="max-w-prose">
+    |   Item      | Value |
+    | ----------- | ----- |
+    | GET_PAGE    |     1 |
+    | NUM_CLIENTS |     1 |
+    | NUM_SERVERS |     1 |
+    | BUFFER_SIZE |     1 |
+    | WEB_PAGE    |     1 |
+   </div>
 
    You can vary the values as you see fit.
 
-   <div class="flex flex-row">
+   <div class="flex flex-row flex-wrap">
     <Figure src={img_value_filling} alt="Value filling..." client:load />
     <Figure src={img_what_is_the_model} alt="What is the model?" client:load />
    </div>

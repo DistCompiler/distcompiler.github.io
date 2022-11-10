@@ -6,12 +6,12 @@ export interface Props {
 const {headings} = Astro.props;
 ---
 
-<ul class="border-x-2 border-t-2 border-slate-800 p-4 flex flex-row flex-wrap align-baseline gap-4 text-lg">
+<ul class="dark:text-white border-x-2 border-t-2 border-slate-800 dark:border-slate-200 p-4 flex flex-row flex-wrap align-baseline gap-4 text-lg">
     {
         headings
             .map(heading => (
                 <li class="whitespace-nowrap">
-                    <a class={`hover:underline"${heading.depth === 1 ? '' : ' text-base text-slate-600'}`} href={`#${heading.slug}`}>
+                    <a class={`hover:underline"${heading.depth === 1 ? '' : ' text-base text-slate-600 dark:text-slate-400'}`} href={`#${heading.slug}`}>
                         {heading.depth === 1 ? '↴ ' : `${'.'.repeat(heading.depth - 1)} `}{heading.text}
                     </a>
                 </li>

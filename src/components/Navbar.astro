@@ -21,7 +21,7 @@ const links = [
 ];
 ---
 
-<header class="flex flex-row flex-wrap gap-8 rounded border-2 border-slate-800 mb-4 p-4 items-end">
+<header class="flex flex-row flex-wrap gap-8 rounded border-2 border-slate-800 dark:border-slate-200 mb-4 p-4 items-end text-black dark:text-white">
     <h1 class="text-4xl">
         <a href="/">DistCompiler/PGo</a>
     </h1>
@@ -29,7 +29,7 @@ const links = [
         <ul class="flex flex-row gap-4 text-lg font-medium">
             {
                 links.map(link => (
-                    <li class={title === link.name ? "text-slate-400 underline hover:no-underline whitespace-nowrap" : "hover:underline whitespace-nowrap"}>
+                    <li class={title === link.name ? "text-slate-600 dark:text-slate-400 underline hover:no-underline whitespace-nowrap" : "hover:underline whitespace-nowrap"}>
                         <a href={link.href}>&#62; {link.name}</a>
                     </li>
                 ))

@@ -2,7 +2,7 @@
 import Navbar from '../components/Navbar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 
-const { frontmatter: {title, noTableOfContents}, headings } = Astro.props;
+const { frontmatter: {title}, headings } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -14,16 +14,17 @@ const { frontmatter: {title, noTableOfContents}, headings } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<title>DistCompiler/PGo: {title}</title>
 	</head>
-	<body class="container p-8 mx-auto antialiased">
+	<body class="container p-8 mx-auto">
 		<!-- the github ribbon, taken from a generator -->
 		<div class="github-ribbon" style="position: absolute; right: 0px; top: 0px; width: 150px; height: 150px; overflow: hidden; z-index: 99999;"><a target="_blank" style="display: inline-block; width: 200px; overflow: hidden; padding: 6px 0px; text-align: center; transform: rotate(45deg); text-decoration: none; color: rgb(255, 255, 255); position: inherit; top: 45px; right: -40px; border-width: 1px 0px; border-style: dotted; border-color: rgba(255, 255, 255, 0.7); font: 700 13px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; box-shadow: rgba(0, 0, 0, 0.5) 0px 2px 3px 0px; background-color: rgb(170, 0, 0); background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));" href="https://github.com/DistCompiler/pgo">Fork me on GitHub</a></div>
+		
 		<!-- actual content below -->
 		<Navbar title={title} />
-		{ noTableOfContents ? <></> : <TableOfContents headings={headings} /> }
-		<main class="prose prose-h1:font-semibold prose-headings:my-4 prose-p:my-1 prose-ul:my-1 max-w-none my-8 outline outline-2 outline-offset-8 outline-slate-800">
+		<TableOfContents headings={headings} />
+		<main class="prose prose-h1:font-semibold prose-headings:my-4 prose-p:my-1 prose-ul:my-1 max-w-none mb-4 border-2 border-slate-800 p-4">
 			<slot />
 		</main>
-		<footer class="gap-8 rounded-b outline outline-2 outline-offset-8 outline-slate-800 mt-8 text-center">
+		<footer class="gap-8 rounded-b border-2 border-slate-800 p-4 mt-4 text-center">
 			&#169; {(new Date()).getFullYear()} The PGo Team
 		</footer>
 	</body>

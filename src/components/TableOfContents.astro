@@ -1,20 +1,65 @@
 ---
+type Heading = { depth: number; slug: string; text: string };
+
 export interface Props {
-    headings: { depth: number; slug: string; text: string }[];
+    headings: Heading[];
 }
 
+import _ from 'lodash';
+
+import {borderColor, bgColor, buttonColors} from '../layouts/meta.js';
+
 const {headings} = Astro.props;
+
+headings
+
+function consumeHeadings(headings: Heading[], level: number): any[] {
+    if(headings.length === 0) {
+        return []
+    }
+    let headingAtPred = (heading: Heading) => heading.depth === level;
+    let headingAbovePred = (heading: Heading) => heading.depth > level;
+    let prefixAt = _.takeWhile(headings, headingAtPred);
+    let rest = _.dropWhile(headings, headingAtPred);
+
+    
+    let restAbove = _.takeWhile(rest, headingAbovePred);
+    let restTODO = _.dropWhile(rest, headingAbovePred);
+    return prefixAt
+        .concat({ level: level + 1, headings: consumeHeadings(restAbove, level + 1) })
+        .concat(consumeHeadings(restTODO, level));
+}
+
+const hierarchicalHeadings = consumeHeadings(headings, 1);
 ---
 
-<ul class="dark:text-white border-x-2 border-t-2 border-slate-800 dark:border-slate-200 p-4 flex flex-row flex-wrap align-baseline gap-4 text-lg">
-    {
-        headings
-            .map(heading => (
-                <li class="whitespace-nowrap">
-                    <a class={`hover:underline"${heading.depth === 1 ? '' : ' text-base text-slate-600 dark:text-slate-400'}`} href={`#${heading.slug}`}>
-                        {heading.depth === 1 ? '↴ ' : `${'.'.repeat(heading.depth - 1)} `}{heading.text}
-                    </a>
-                </li>
-            ))
-    }
-</ul>
+<div class="md:float-right md:min-w-[20%] not-prose md:ml-4 mb-4 p-2 border md:border-b-slate-400 md:border-l-slate-400 bg-white dark:bg-black md:bg-slate-200 md:dark:border-b-slate-600 md:dark:border-l-slate-600 md:dark:bg-slate-800 dark:text-white border-slate-600 dark:border-slate-400">
+    <h1 class="text-2xl">Outline</h1>
+    <ul class="ml-2">
+        {
+            (() => {
+                function renderHierarchicalHeadings(hh: any): any {
+                    if(hh.headings) {
+                        if(hh.headings.length > 0) {
+                            return (<li><ul class="ml-4">{hh.headings.map(renderHierarchicalHeadings)}</ul></li>);
+                        } else {
+                            return <></>;
+                        }
+                    } else {
+                        let heading: Heading = hh;
+                        return (
+                            <li>
+                                &#8594;
+                                <a class={`hover:underline px-2 py-1`} href={`#${heading.slug}`}>
+                                    {heading.text}
+                                </a>
+                            </li>
+                        );
+                    }
+                }
+            
+                return hierarchicalHeadings.map(renderHierarchicalHeadings);
+            })()
+        }
+    </ul>
+</div>

@@ -11,8 +11,6 @@ import {borderColor, bgColor, buttonColors} from '../layouts/meta.js';
 
 const {headings} = Astro.props;
 
-headings
-
 function consumeHeadings(headings: Heading[], level: number): any[] {
     if(headings.length === 0) {
         return []

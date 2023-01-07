@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 
 import {borderColor, bgColor, borderStyle} from '../layouts/meta.js';
+import logo from '../images/piggo.svg';
 
 const { frontmatter: {title}, headings } = Astro.props;
 ---
@@ -12,7 +13,7 @@ const { frontmatter: {title}, headings } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<!--<link rel="icon" type="image/svg+xml" href="/favicon.svg" />-->
+		<link rel="icon" type="image/svg+xml" href={logo} />
 		<meta name="generator" content={Astro.generator} />
 		<title>PGo: {title}</title>
 	</head>

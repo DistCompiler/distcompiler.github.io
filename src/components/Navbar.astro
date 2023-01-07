@@ -4,6 +4,7 @@ export interface Props {
 }
 
 import {borderColor, bgColor, borderStyle, buttonColors} from '../layouts/meta.js';
+import logo from '../images/piggo.svg';
 
 const { title } = Astro.props;
 
@@ -25,6 +26,7 @@ const links = [
 
 <header class={`flex flex-row flex-wrap gap-8 rounded mb-4 p-4 items-end text-black dark:text-white ${borderColor} ${bgColor} ${borderStyle}`}>
     <h1 class="text-4xl font-bold">
+        <img class="inline-block h-12" alt="PGo logo" src={logo} />
         <a href="/">PGo</a>
     </h1>
     <nav class="ml-auto mr-8">

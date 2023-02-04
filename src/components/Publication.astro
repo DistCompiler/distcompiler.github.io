@@ -1,0 +1,49 @@
+---
+const {title, talk, doi, pdf, authors, conference, artifactAvailable, artifactFunctional, resultsReproduced} = Astro.props;
+
+const conferenceURL = {
+    "ASPLOS'23": "https://asplos-conference.org/2023",
+    "ICSE'23-SEIP": "https://conf.researchr.org/track/icse-2023/icse-2023-SEIP",
+    "SREcon'23 Americas": "https://www.usenix.org/conference/srecon23americas",
+    "TLA+Conf'22": "https://conf.tlapl.us/2022/",
+    "MODELS'20": "https://conf.researchr.org/home/models-2020",
+    "TLA+Conf'19": "https://conf.tlapl.us/2019/",
+}[conference];
+
+import artifactAvailableImg from '../images/artifacts_available_v1_1.png';
+import artifactFunctionalImg from '../images/artifacts_evaluated_functional_v1_1.png';
+import resultsReproducedImg from '../images/results_reproduced_v1_1.png';
+
+const hrefStyle = "underline hover:no-underline";
+---
+<div class="not-prose pb-2">
+    {conferenceURL ? <a href={conferenceURL} class={hrefStyle}>[{conference}]</a> : <Fragment>[{conference}]</Fragment>} {talk ? <span class="font-bold">Talk:&nbsp;</span> : <Fragment/>}<a href={doi} class={`${hrefStyle} font-bold`}>{title}</a>
+    {pdf ? <a href={pdf} class={hrefStyle}>[pdf]</a> : <Fragment/>}
+    {resultsReproduced ? <a href="https://www.acm.org/publications/policies/artifact-review-and-badging-current#reproduced"><img src={resultsReproducedImg} class="inline w-6" /></a> : <Fragment />}
+    {artifactFunctional ? <a href="https://www.acm.org/publications/policies/artifact-review-and-badging-current#functional"><img src={artifactFunctionalImg} class="inline w-6" /></a> : <Fragment />}
+    {artifactAvailable ? <a href="https://www.acm.org/publications/policies/artifact-review-and-badging-current#available"><img src={artifactAvailableImg} class="inline w-6" /></a> : <Fragment />}
+
+    {(authors.length > 0) ?
+        (<div class="pl-8 flex flex-row flex-wrap italic">
+            {
+                authors.map((author, idx) => {
+                    let prefix =
+                        (idx === 1 && authors.length === 2) ?
+                            <Fragment>&nbsp;and&nbsp;</Fragment> :
+                        (idx > 0 && idx === authors.length - 1) ?
+                            <Fragment>, and&nbsp;</Fragment> :
+                        (idx > 0) ?
+                            <Fragment>,&nbsp;</Fragment> :
+                            <Fragment />;
+
+                    return (typeof(author) === "string") ?
+                        (<Fragment>{prefix}{author}</Fragment>) :
+                        function() {
+                            let [name, url] = author;
+                            return (<Fragment>{prefix}<a href={url} class="underline hover:no-underline">{name}</a></Fragment>)
+                        }()
+                })
+            }
+        </div>) : <Fragment />
+    }
+</div>

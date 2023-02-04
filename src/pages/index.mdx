@@ -3,13 +3,68 @@ layout: ../layouts/Layout.astro
 title: Home
 ---
 
+import Publication from '../components/Publication.astro'
+import asplos23PDF from '../assets/asplosb23main-p12-p-e73de3693c-62943-final.pdf'
+
 PGo is a source to source compiler that translates Modular PlusCal
 specifications (which use a superset of
 [PlusCal](http://lamport.azurewebsites.net/tla/pluscal.html)) into [Go](https://golang.org/) programs.
 
-To get an overview via video, we have recorded two recent presentations:
-- [PGo TLA+ conference talk, September 2022](https://www.youtube.com/watch?v=XHqd60ZeUBo)
-- [PGo overview talk, February 2022](https://www.youtube.com/watch?v=H6-dQQSikik).
+See our publications and talks for an overview:
+
+<Publication
+    title="Compiling Distributed System Models with PGo"
+    authors={[
+        ["Finn Hackett", "https://fhackett.github.io/"],
+        ["Shayan Hosseini", "https://shayanh.com/"],
+        "Renato Costa",
+        ["Matthew Do", "https://minhdo.org/"],
+        ["Ivan Beschastnikh", "https://www.cs.ubc.ca/~bestchai/"]]}
+    doi="https://doi.org/10.1145/3575693.3575695"
+    pdf={asplos23PDF}
+    conference="ASPLOS'23"
+    artifactAvailable={true}
+    artifactFunctional={true}
+    resultsReproduced={true}
+/>
+<Publication
+    talk={true}
+    title="Building Correct Distributed Systems with the PGo Compiler"
+    authors={[
+        ["Finn Hackett", "https://fhackett.github.io/"],
+        ["Shayan Hosseini", "https://shayanh.com/"],
+        "Ruchit Palrecha",
+        "Yennis Ye",
+        ["Ivan Beschastnikh", "https://www.cs.ubc.ca/~bestchai/"],
+    ]}
+    doi="https://www.youtube.com/watch?v=XHqd60ZeUBo"
+    conference="TLA+Conf'22"
+/>
+<Publication
+    talk={true}
+    title="PGo Overview"
+    authors={[
+        ["Finn Hackett", "https://fhackett.github.io/"],
+        ["Shayan Hosseini", "https://shayanh.com/"],
+        "Ruchit Palrecha",
+        "Yennis Ye",
+        ["Ivan Beschastnikh", "https://www.cs.ubc.ca/~bestchai/"],
+    ]}
+    doi="https://www.youtube.com/watch?v=H6-dQQSikik"
+    conference="Self-Published'22"
+/>
+<Publication
+    talk={true}
+    title="Compiling Distributed System Models into Implementations with PGo"
+    authors={[
+        ["Finn Hackett", "https://fhackett.github.io/"],
+        ["Ivan Beschastnikh", "https://www.cs.ubc.ca/~bestchai/"],
+        "Renato Costa",
+        ["Matthew Do", "https://minhdo.org/"],
+    ]}
+    doi="https://www.youtube.com/watch?v=GvrpUeDN5zs"
+    conference="TLA+Conf'19"
+/>
 
 For more in-depth documentation, see the navigation bar.
 

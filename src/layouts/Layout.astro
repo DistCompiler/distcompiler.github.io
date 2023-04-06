@@ -6,13 +6,11 @@ import {borderColor, bgColor, borderStyle} from '../layouts/meta.js';
 import logo from '../images/piggo.svg';
 
 const { frontmatter: {title}, headings } = Astro.props;
-
-import bangers from '../assets/Bangers-Regular.ttf'
 ---
-<style is:global define:vars={{bangers}}>
+<style is:global>
     @font-face {
         font-family: 'Bangers';
-        src: url(var(--banger));
+        src: url('/fonts/Bangers-Regular.ttf') format('truetype');
     }
 </style>
 

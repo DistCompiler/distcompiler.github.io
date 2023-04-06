@@ -1,5 +1,5 @@
 ---
-const {title, talk, doi, pdf, authors, conference, artifactAvailable, artifactFunctional, resultsReproduced} = Astro.props;
+const {title, talk, doi, pdf, authors, conference, artifactAvailable, artifactFunctional, resultsReproduced, distinguishedArtifact} = Astro.props;
 
 const conferenceURL = {
     "ASPLOS'23": "https://asplos-conference.org/2023",
@@ -10,18 +10,19 @@ const conferenceURL = {
     "TLA+Conf'19": "https://conf.tlapl.us/2019/",
 }[conference];
 
-import artifactAvailableImg from '../images/artifacts_available_v1_1.png';
-import artifactFunctionalImg from '../images/artifacts_evaluated_functional_v1_1.png';
-import resultsReproducedImg from '../images/results_reproduced_v1_1.png';
+import artifactAvailableImg from '../assets/artifacts_available_v1_1.png';
+import artifactFunctionalImg from '../assets/artifacts_evaluated_functional_v1_1.png';
+import resultsReproducedImg from '../assets/results_reproduced_v1_1.png';
 
 const hrefStyle = "underline hover:no-underline";
 ---
 <div class="not-prose pb-2">
-    {conferenceURL ? <a href={conferenceURL} class={hrefStyle}>[{conference}]</a> : <Fragment>[{conference}]</Fragment>} {talk ? <span class="font-bold">Talk:&nbsp;</span> : <Fragment/>}<a href={doi} class={`${hrefStyle} font-bold`}>{title}</a>
+    <a href={conferenceURL} class={hrefStyle}>[{conference}]</a> {talk ? <span class="font-bold">Talk:&nbsp;</span> : <Fragment/>}<a href={doi} class={`${hrefStyle} font-bold`}>{title}</a>
     {pdf ? <a href={pdf} class={hrefStyle}>[pdf]</a> : <Fragment/>}
     {resultsReproduced ? <a href="https://www.acm.org/publications/policies/artifact-review-and-badging-current#reproduced"><img src={resultsReproducedImg} class="inline w-6" /></a> : <Fragment />}
     {artifactFunctional ? <a href="https://www.acm.org/publications/policies/artifact-review-and-badging-current#functional"><img src={artifactFunctionalImg} class="inline w-6" /></a> : <Fragment />}
     {artifactAvailable ? <a href="https://www.acm.org/publications/policies/artifact-review-and-badging-current#available"><img src={artifactAvailableImg} class="inline w-6" /></a> : <Fragment />}
+    {distinguishedArtifact ? <span class="font-['Bangers']">+ 🏆 Distinguished Artifact!</span> : <Fragment /> }
 
     {(authors.length > 0) ?
         (<div class="pl-8 flex flex-row flex-wrap italic">
